@@ -9,10 +9,10 @@ module Insertable
       record['updated_at'] = time
     end
 
-    def insert_all(records, options)
+    def insert_all_normalized(records, options = {returning: [:id]})
       normalized = normalize(records)
   
-      super(normalized, options)
+      insert_all(normalized, options)
     end
   end
 end
