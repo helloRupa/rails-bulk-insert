@@ -11,8 +11,15 @@ module Insertable
 
     def insert_all_normalized(records, options = {returning: [:id]})
       normalized = normalize(records)
+      result = nil
   
-      insert_all(normalized, options)
+      begin 
+        result = insert_all(normalized, options)
+      rescue ActiveRecord::StatementInvalid => e
+        result = e
+      end
+
+      result
     end
   end
 end

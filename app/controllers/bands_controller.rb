@@ -6,9 +6,16 @@ class BandsController < ApplicationController
   end
 
   def create
-    bands = Band.insert_all(bands_params, returning: [:id, :name, :members])
-  
-    render json: bands
+    bands = Band.insert_all_normalized(bands_params, returning: [:id, :name, :members])
+
+    if bands.kind_of?(ActiveRecord::Result)
+      render json: bands
+    else
+      render json: {
+        status: 422,
+        error: bands
+      }, status: 422
+    end
   end
 
   private
