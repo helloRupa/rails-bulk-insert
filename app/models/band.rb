@@ -1,23 +1,23 @@
 class Band < ApplicationRecord
+  include Insertable
+
   validates :name, presence: true, length: { minimum: 3 }, uniqueness: true
   validates :members, presence: true, numericality: { greater_than: 0 }
 
-  def self.insert_all(records, options)
-    normalized = normalize(records)
+  after_validation :add_gibberish
 
-    super(normalized, options)
+  def add_gibberish
+    self.class.make_gibberish(self)
+  end
+
+  def self.make_gibberish(record)
+    record[:gibberish] = "#{record[:name]} likes gibberish"
   end
 
   def self.normalize(records)
     records.each do |rec|
       add_timestamp(rec)
+      make_gibberish(rec)
     end
-  end
-
-  def self.add_timestamp(record)
-    time = Time.now.utc
-
-    record['created_at'] = time
-    record['updated_at'] = time
   end
 end
